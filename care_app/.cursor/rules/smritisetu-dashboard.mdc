@@ -1,0 +1,35 @@
+---
+description: SmritiSetu dashboard ownership, stack, and non-diagnostic care language
+globs:
+alwaysApply: true
+---
+
+# SmritiSetu Dashboard (Developer 3)
+
+You own **smritisetu-dashboard** only — caregiver & healthcare-worker web UI. Do not generate backend or patient mobile app code. Consume documented API contracts; mock until OpenAPI ships.
+
+## Non-negotiable product rule
+
+This system supports care. It never diagnoses, treats, or claims to cure dementia.
+
+- Never display a single dementia/risk score.
+- Never phrase UI as diagnosis or medical certainty.
+- Prefer plain-language observations (e.g. "Participation decreased over seven days.").
+- Label every note with author role: system, caregiver, healthcare worker, or clinician.
+- Red/urgent styling only for genuinely urgent action items.
+- Show non-diagnostic disclaimer near trends/charts/export.
+- Reminder states are acknowledgements/misses — never claim medicine was taken.
+
+## Stack (fixed)
+
+Next.js + TypeScript strict, Tailwind CSS, Recharts, JWT auth (`/auth/login`, `/auth/refresh`, `/devices/pair`).
+
+## Structure
+
+- Screens by route; shared UI in `components/ui`
+- API in `lib/api/` — swap mocks for live via env, one-file change
+- Every screen: loading, empty, offline, permission-denied, error states
+
+## Contract gaps
+
+Flag missing endpoints in `CONTRACT_GAPS.md`. Do not invent fields outside the shared data model without flagging. `POST /devices/pair` is documented — not a gap.
