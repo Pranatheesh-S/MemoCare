@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Remi Care",
+    "slug": "smritisetu-care",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "newArchEnabled": true,
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-image-picker",
+      ["expo-audio", { "microphonePermission": "Allow Remi Care to record your voice for the patient's assistant." }],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/logo.png",
+          "imageWidth": 220,
+          "resizeMode": "contain",
+          "backgroundColor": "#F7F5F0"
+        }
+      ]
+    ],
+    "experiments": { "typedRoutes": true }
+  }
+}
