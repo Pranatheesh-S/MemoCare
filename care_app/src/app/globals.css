@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+:root {
+  --color-canvas: #eef4f1;
+  --color-mist: #e3ece7;
+  --color-border: #c5d4cc;
+  --color-ink: #1a2b24;
+  --color-ink-muted: #4d635a;
+  --color-teal: #0f6b5c;
+  --color-teal-dark: #0a4f44;
+  --color-teal-soft: #d5ebe5;
+  --color-river: #1d4e89;
+  --color-urgent: #b42318;
+  --background: var(--color-canvas);
+  --foreground: var(--color-ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, #d8ebe3 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, #d6e3f0 0%, transparent 50%),
+    var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-body), "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: 1rem;
+  height: 1rem;
+  min-width: 1rem;
+  padding: 0;
+  border-radius: 0.25rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 1px;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.panel {
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  background: white;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgb(26 43 36 / 4%);
+}
