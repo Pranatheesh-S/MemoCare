@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Companion Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ccfbf1 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        .speaking-glow {
+            filter: drop-shadow(0 0 15px rgba(13, 148, 136, 0.6));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .mic-active {
+            color: #ef4444;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="text-gray-800 antialiased p-6 md:p-12 items-center justify-center">
+
+    <div id="setup-screen" class="glass-panel w-full max-w-lg rounded-3xl p-10 text-center transition-all duration-500">
+        <h1 class="text-3xl font-semibold mb-6 text-teal-800">Ready to start?</h1>
+        <p class="mb-8 text-gray-600">Please make sure your microphone is enabled before starting the conversation.</p>
+        <button id="start-btn"
+            class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-4 px-10 rounded-full shadow-lg transition-transform transform hover:scale-105">
+            Start Conversation
+        </button>
+    </div>
+
+    <div id="chat-screen"
+        class="glass-panel w-full max-w-2xl rounded-3xl p-8 flex flex-col hidden transition-all duration-500">
+        <div class="flex justify-between items-center mb-8 border-b border-teal-100 pb-4">
+            <h2 class="text-2xl font-semibold text-teal-800 text-center w-full">Your Companion</h2>
+        </div>
+
+        <div class="flex flex-col items-center justify-center py-10 space-y-8">
+            <div id="avatar"
+                class="w-32 h-32 bg-teal-100 rounded-full flex items-center justify-center text-teal-600 transition-all duration-300">
+                <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <div id="subtitle" class="text-2xl text-center text-gray-700 h-24 italic opacity-90 transition-opacity">
+                Connecting...
+            </div>
+        </div>
+
+        <div class="flex items-center justify-center mt-6 h-12">
+            <div id="mic-status" class="text-gray-400 font-medium text-lg flex items-center transition-colors">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z">
+                    </path>
+                </svg>
+                <span id="mic-text">Mic off</span>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <button id="end-btn" class="text-sm text-gray-500 hover:text-red-500 transition-colors">End Session</button>
+        </div>
+    </div>
+
+    <script>
+        const userId = '{{ user_id }}';
+        const flowType = '{{ flow_type }}';
+        const lang = '{{ lang }}';
+
+        const setupScreen = document.getElementById('setup-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const startBtn = document.getElementById('start-btn');
+        const endBtn = document.getElementById('end-btn');
+        const subtitle = document.getElementById('subtitle');
+        const avatar = document.getElementById('avatar');
+        const micStatus = document.getElementById('mic-status');
+        const micText = document.getElementById('mic-text');
+
+        let ws;
+        let recognition;
+        let isAI_Speaking = false;
+        let sessionActive = false;
+
+        // ASR Analytics tracking
+        let turnStartTime = 0;
+        let lastSpeechEndTime = 0;
+        let pauseDurations = [];
+        let finalTranscript = "";
+        let silenceTimer = null;
+        const SILENCE_THRESHOLD_MS = 4000; // 4 seconds of patient wait time
+
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            // We use continuous so we can control exactly when we cut them off
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = lang === 'en' ? 'en-US' : lang; // Extend for hi, ta later
+
+            recognition.onstart = function () {
+                micStatus.classList.add('mic-active');
+                micText.innerText = "Listening...";
+                turnStartTime = Date.now();
+                lastSpeechEndTime = turnStartTime;
+                pauseDurations = [];
+                finalTranscript = "";
+            };
+
+            recognition.onresult = function (event) {
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript + ' ';
+                        // calculate pause since we last stopped speaking or started listening
+                        let pause = (Date.now() - lastSpeechEndTime) / 1000.0;
+                        if (pause > 1.0) pauseDurations.push(pause); // significant pause
+                        lastSpeechEndTime = Date.now();
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                subtitle.innerText = (finalTranscript + interimTranscript) || "...";
+                subtitle.classList.remove("text-teal-700");
+                subtitle.classList.add("text-gray-700");
+
+                // Start the silence timer: if they don't say anything for 4 seconds, we submit
+                if (finalTranscript.trim().length > 0 || interimTranscript.trim().length > 0) {
+                    clearTimeout(silenceTimer);
+                    silenceTimer = setTimeout(() => {
+                        if (sessionActive && !isAI_Speaking) {
+                            recognition.stop();
+                        }
+                    }, SILENCE_THRESHOLD_MS);
+                }
+            };
+
+            recognition.onerror = function (event) {
+                console.error("Speech recognition error", event.error);
+                if (event.error === 'no-speech' && sessionActive && !isAI_Speaking) {
+                    // try to restart if it just timed out
+                    try { recognition.start(); } catch (e) { }
+                }
+            };
+
+            recognition.onend = function () {
+                micStatus.classList.remove('mic-active');
+                micText.innerText = "Mic off";
+                // If AI is not speaking and session is active, it means we finished capturing a turn
+                if (sessionActive && !isAI_Speaking && finalTranscript.trim().length > 0) {
+                    submitTurn();
+                } else if (sessionActive && !isAI_Speaking) {
+                    // nothing heard, keep trying
+                    try { recognition.start(); } catch (e) { }
+                }
+            };
+        } else {
+            alert("Speech Recognition API not supported in this browser. Please use Chrome.");
+        }
+
+        startBtn.addEventListener('click', () => {
+            setupScreen.classList.add('hidden');
+            chatScreen.classList.remove('hidden');
+            sessionActive = true;
+            connectWebSocket();
+        });
+
+        endBtn.addEventListener('click', () => {
+            sessionActive = false;
+            if (recognition) recognition.stop();
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+            if (ws) ws.send(JSON.stringify({ type: "end" }));
+            setTimeout(() => { window.location.href = `/dashboard/${userId}`; }, 1000);
+        });
+
+        function connectWebSocket() {
+            ws = new WebSocket(`ws://${window.location.host}/ws/session/${userId}/${flowType}?lang=${lang}`);
+            ws.onmessage = function (event) {
+                const msg = JSON.parse(event.data);
+                if (msg.type === "response") {
+                    speakText(msg.content);
+                } else if (msg.type === "session_done") {
+                    subtitle.innerText = "Session Completed.";
+                    sessionActive = false;
+                }
+            };
+        }
+
+        function speakText(text) {
+            isAI_Speaking = true;
+            if (recognition) recognition.stop(); // Don't listen while AI speaks
+
+            avatar.classList.add('speaking-glow', 'bg-teal-200');
+            subtitle.innerText = text;
+            subtitle.classList.add("text-teal-700");
+            subtitle.classList.remove("text-gray-700");
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang === 'en' ? 'en-US' : lang; // Fallback
+
+            utterance.onend = function () {
+                isAI_Speaking = false;
+                avatar.classList.remove('speaking-glow', 'bg-teal-200');
+                if (sessionActive) {
+                    try { recognition.start(); } catch (e) { }
+                }
+            };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function submitTurn() {
+            if (!finalTranscript.trim()) return;
+
+            let audioDurationS = (Date.now() - turnStartTime) / 1000.0;
+            let wordCount = finalTranscript.trim().split(/\s+/).length;
+            let wpm = audioDurationS > 0 ? (wordCount / audioDurationS) * 60.0 : 0;
+
+            // Artificial fallback pause to simulate if empty
+            if (pauseDurations.length === 0) pauseDurations = [0.5];
+
+            const payload = {
+                type: "text",
+                content: finalTranscript.trim(),
+                asr_metadata: {
+                    audio_duration_s: audioDurationS,
+                    words_per_minute: wpm,
+                    pause_durations_s: pauseDurations
+                }
+            };
+            ws.send(JSON.stringify(payload));
+
+            finalTranscript = "";
+            subtitle.innerText = "Thinking...";
+        }
+    </script>
+</body>
+
+</html>

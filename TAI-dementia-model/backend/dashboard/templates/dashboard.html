@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dementia Companion – Caregiver Dashboard</title>
+    <!-- Tailwind CSS for rapid styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for sparklines -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .severity-none {
+            @apply text-gray-500 bg-gray-100;
+        }
+
+        .severity-small_deviation {
+            @apply text-yellow-800 bg-yellow-100 border-yellow-300;
+        }
+
+        .severity-notable_deviation {
+            @apply text-orange-800 bg-orange-100 border-orange-300;
+        }
+
+        .severity-significant_deviation {
+            @apply text-red-800 bg-red-100 border-red-300;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-semibold text-teal-700">Compañía Dashboard</h1>
+        <div class="flex items-center space-x-4">
+            <select id="userSelect" onchange="window.location.href='/dashboard/' + this.value"
+                class="border rounded p-2 text-sm bg-gray-50">
+                <option value="">Select an Elder...</option>
+                {% for u in users %}
+                <option value="{{ u.id }}" {% if selected_user and selected_user.id==u.id %}selected{% endif %}>
+                    {{ u.name }} (Elder, ID: {{ u.id }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        {% if not selected_user %}
+        <div class="text-center py-20">
+            <h2 class="text-2xl font-bold text-gray-600 mb-2">Welcome to the Dashboard</h2>
+            <p class="text-gray-500">Please select an elder from the top right to view their response pattern trends.
+            </p>
+        </div>
+        {% else %}
+
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800">{{ selected_user.name }}'s Response Patterns</h2>
+                <p class="text-sm text-gray-500 mt-1">Changes are detected automatically over time. This is not a
+                    clinical severity score.</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="/elder/{{ selected_user.id }}" target="_blank"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow text-sm font-medium transition-colors">
+                    Launch Elder UI
+                </a>
+                <button onclick="runTrendCheck({{ selected_user.id }})"
+                    class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md shadow text-sm font-medium transition-colors">
+                    Run Analysis Now
+                </button>
+            </div>
+        </div>
+
+        <!-- Active Alerts Section -->
+        <div class="mb-10">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <svg class="w-6 h-6 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Recent Alerts Let's Review
+            </h3>
+
+            {% if not alerts %}
+            <div class="bg-white border rounded-lg p-6 text-center text-gray-500 italic shadow-sm">
+                No pattern shifts detected recently. All stable! 🌟
+            </div>
+            {% else %}
+            <div class="space-y-4">
+                {% for alert in alerts %}
+                <div
+                    class="bg-white border-l-4 rounded-r-lg shadow-sm p-5 {% if alert.severity == 'significant_deviation' %}border-red-500{% elif alert.severity == 'notable_deviation' %}border-orange-500{% else %}border-yellow-500{% endif %}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center space-x-3 mb-1">
+                                <span class="font-bold text-gray-800">{{ alert.metric }}</span>
+                                <span
+                                    class="text-xs px-2 py-0.5 rounded-full font-medium severity-{{ alert.severity }}">
+                                    {{ alert.severity.replace('_', ' ') | title }}
+                                </span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Persisted for ~{{ alert.duration_weeks }} weeks.
+                                (Confidence: {{ alert.confidence }})</p>
+
+                            <div class="bg-gray-50 rounded p-3 text-gray-700 text-sm italic border border-gray-100">
+                                "{{ alert.explanation }}"
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-gray-400 mb-1">{{ alert.created_at[:10] }}</div>
+                            <div class="text-xs font-mono text-gray-400">z = {{ alert.magnitude }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Historical Trends Sparks -->
+        <div>
+            <h3 class="text-xl font-bold text-gray-800 mb-4 pb-2 border-b">Metric Trends (Last 20 Sessions)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for metric_name, values_list in sparklines.items() %}
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <h4 class="text-sm font-semibold text-gray-600 mb-3">{{ metric_name }}</h4>
+                    <div class="h-32 w-full relative">
+                        <canvas id="chart-{{ loop.index }}"></canvas>
+                    </div>
+                    <!-- Inject raw data as data attr for script below -->
+                    <div class="hidden chart-data" data-id="chart-{{ loop.index }}"
+                        data-values='{{ values_list | tojson }}'></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% endif %}
+    </main>
+
+    <script>
+        // Init sparklines
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartElements = document.querySelectorAll('.chart-data');
+            chartElements.forEach(el => {
+                const id = el.getAttribute('data-id');
+                const rawValues = JSON.parse(el.getAttribute('data-values'));
+                const ctx = document.getElementById(id).getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array(rawValues.length).fill(''),
+                        datasets: [{
+                            data: rawValues,
+                            borderColor: '#0d9488', // teal-600
+                            backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                        scales: {
+                            x: { display: false },
+                            y: { display: false, min: Math.min(...rawValues) * 0.9, max: Math.max(...rawValues) * 1.1 }
+                        }
+                    }
+                });
+            });
+        });
+
+        // Test Trigger
+        async function runTrendCheck(userId) {
+            if (!confirm("Force trigger an analysis run on the latest data?")) return;
+            try {
+                const res = await fetch(`/api/run_trend/${userId}`, { method: 'POST' });
+                const data = await res.json();
+                alert(`Analysis complete. Created ${data.alerts_created} new alerts.`);
+                window.location.reload();
+            } catch (e) {
+                alert("Error triggering trend check.");
+                console.error(e);
+            }
+        }
+    </script>
+</body>
+
+</html>
