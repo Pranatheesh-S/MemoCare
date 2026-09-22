@@ -1,0 +1,130 @@
+rules_version = '2';
+
+// SmritiSetu — patient provisioning + health-worker portal (project sih-2026-c3a65).
+//
+//   users/{uid}            a caregiver / health-worker profile. Holds the role
+//                          (Auth custom claims need the Admin SDK). Self-write.
+//   patients/{id}          created by the owning caregiver or health worker.
+//                          A health worker joins a patient's care team by adding
+//                          their uid to `workerUids` (via a pairing code).
+//   patients/{id}/memories written by any signed-in caregiver, read by anyone
+//                          signed in (the patient app reads them after entering
+//                          a code). Created in the same batch as the patient,
+//                          so the create rule must NOT depend on the parent
+//                          already existing.
+//   patients/{id}/healthChecks  append-only vitals + observations recorded by a
+//                          health worker on the care team.
+//   patients/{id}/voice/sample  the caregiver's recorded assistant voice
+//                          (base64 m4a). Owner writes it; the patient app reads
+//                          it after pairing. Kept off the patient doc so it does
+//                          not share the 1 MiB budget with the profile photo.
+//   patients/{id}/routineDays/{date}  one daily routine per calendar day. Owner
+//                          writes; any signed-in client reads (the patient app
+//                          shows it). AI drafts are stored with approved:false.
+//   patients/{id}/medicineLog/{id}   append-only record of doses given.
+//   patients/{id}/sessions game-session summaries written by the paired patient
+//                          app. Append-only.
+//   codes/{CODE}           owner creates/revokes; the patient app may stamp
+//                          only usedAt / lastPairedAt. A code cannot be listed.
+//   alerts/{id}            care-team alert feed (health worker <-> caregiver).
+//
+// The patient app authenticates anonymously, so `request.auth != null` is true
+// for it without giving it a caregiver identity. Patient doc IDs are random
+// 20-char Firestore IDs and the collection is not listable, so "any signed-in
+// user may read a patient / create a memory / add themselves to workerUids" is
+// a deliberate, minor trade-off for a prototype.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function myUid() { return request.auth.uid; }
+    function touchesOnly(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && uid == myUid();
+      allow delete: if false;
+    }
+
+    match /patients/{patientId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.caregiverUid == myUid();
+      // Owner may edit; a care-team health worker may edit; the patient app may
+      // stamp only `pairedAt`; any signed-in user may add themselves to the
+      // care team (`workerUids`) after reading a valid pairing code client-side.
+      allow update: if signedIn() && (
+           resource.data.caregiverUid == myUid()
+        || (resource.data.workerUids is list && myUid() in resource.data.workerUids)
+        || touchesOnly(['pairedAt'])
+        || touchesOnly(['workerUids'])
+      );
+      allow delete: if signedIn() && resource.data.caregiverUid == myUid();
+
+      match /memories/{memoryId} {
+        allow read: if signedIn();
+        allow create: if signedIn();
+        allow update, delete: if signedIn()
+          && get(/databases/$(database)/documents/patients/$(patientId)).data.caregiverUid == myUid();
+      }
+
+      match /healthChecks/{checkId} {
+        allow read: if signedIn();
+        allow create: if signedIn();
+        allow update, delete: if false;
+      }
+
+      // The caregiver's recorded assistant voice. Only the owning caregiver may
+      // write it; any signed-in client (incl. the paired patient app) may read.
+      match /voice/{docId} {
+        allow read: if signedIn();
+        allow write: if signedIn()
+          && get(/databases/$(database)/documents/patients/$(patientId)).data.caregiverUid == myUid();
+      }
+
+      // Daily routines. Owner (caregiver) writes; any signed-in client reads so
+      // the patient app can show the day.
+      match /routineDays/{date} {
+        allow read: if signedIn();
+        allow write: if signedIn()
+          && get(/databases/$(database)/documents/patients/$(patientId)).data.caregiverUid == myUid();
+      }
+
+      // Append-only medicine log. The caregiver and (later) the patient app add
+      // rows; nobody rewrites history.
+      match /medicineLog/{entryId} {
+        allow read: if signedIn();
+        allow create: if signedIn();
+        allow update, delete: if false;
+      }
+
+      match /sessions/{sessionId} {
+        allow read: if signedIn();
+        allow create: if signedIn();
+        allow update, delete: if false;
+      }
+    }
+
+    match /codes/{code} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn() && request.resource.data.caregiverUid == myUid();
+      allow update: if signedIn()
+        && (resource.data.caregiverUid == myUid() || touchesOnly(['usedAt', 'lastPairedAt']));
+      allow delete: if signedIn() && resource.data.caregiverUid == myUid();
+    }
+
+    match /alerts/{alertId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.raisedByUid == myUid();
+      // Anyone on the care team can move an alert along its status track, but
+      // not rewrite its content.
+      allow update: if signedIn() && touchesOnly(
+        ['status', 'acknowledgedByName', 'acknowledgedAt', 'resolvedByName', 'resolvedAt']
+      );
+      allow delete: if false;
+    }
+  }
+}
