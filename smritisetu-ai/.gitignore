@@ -1,0 +1,34 @@
+node_modules/
+dist/
+build/
+.expo/
+.expo-shared/
+coverage/
+*.log
+npm-debug.log*
+.env
+.env.local
+.env.*.local
+!.env.example
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+.DS_Store
+.idea/
+.vscode/
+services/backend-api/prisma/*.db
+services/ml-service/models/*.joblib
+apps/patient-mobile/android/
+apps/patient-mobile/ios/
+
+# ---------- Custom accessibility voice ----------
+# The reference recording, the pre-generated narration and the app's bundled
+# clips ARE committed for this team's shared repo, by explicit choice, so a
+# teammate's `git pull` resumes generation rather than starting over. Only the
+# dynamic runtime cache stays out: it is ephemeral, per-session output, not a
+# checked-in deliverable, and may briefly hold personalised text (a patient's
+# name) rather than fixed narration.
+services/tts-service/generated/

@@ -1,0 +1,108 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: smritisetu-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-smritisetu}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-smritisetu_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-smritisetu}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-smritisetu} -d ${POSTGRES_DB:-smritisetu}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  ml-service:
+    build:
+      context: ./services/ml-service
+      dockerfile: Dockerfile
+    container_name: smritisetu-ml
+    restart: unless-stopped
+    environment:
+      ML_PORT: 8000
+      ML_LOG_LEVEL: ${ML_LOG_LEVEL:-info}
+      ML_MIN_DIFFICULTY: ${ML_MIN_DIFFICULTY:-1}
+      ML_MAX_DIFFICULTY: ${ML_MAX_DIFFICULTY:-4}
+      ML_ANOMALY_ENABLED: ${ML_ANOMALY_ENABLED:-true}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Narration in a caregiver's own cloned voice. Optional: with it stopped the
+  # patient app narrates with the device's own speech engine, as it always has.
+  # Build with --build-arg WITH_MODEL=true where speech is actually generated;
+  # the default image is the API layer alone, without torch.
+  tts-service:
+    build:
+      context: ./services/tts-service
+      dockerfile: Dockerfile
+    container_name: smritisetu-tts
+    restart: unless-stopped
+    environment:
+      TTS_PORT: 8100
+      TTS_ENABLED: ${TTS_ENABLED:-true}
+      TTS_LOG_LEVEL: ${TTS_LOG_LEVEL:-info}
+      TTS_MODEL: ${TTS_MODEL:-Qwen/Qwen3-TTS-12Hz-0.6B-Base}
+      TTS_DEVICE: ${TTS_DEVICE:-auto}
+      TTS_SUPPORTED_LANGUAGES: ${TTS_SUPPORTED_LANGUAGES:-en}
+      TTS_AUDIO_RETENTION_HOURS: ${TTS_AUDIO_RETENTION_HOURS:-24}
+      TTS_API_KEY: ${TTS_API_KEY:-}
+      TTS_LOCALES_DIR: /app/locales
+    ports:
+      - "8100:8100"
+    volumes:
+      # The reference recording is never baked into an image.
+      - ./services/tts-service/voices:/app/voices:ro
+      - ./services/tts-service/static_audio:/app/static_audio:ro
+      - ./apps/patient-mobile/locales:/app/locales:ro
+      - tts_generated:/app/generated
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8100/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  backend-api:
+    build:
+      context: .
+      dockerfile: ./services/backend-api/Dockerfile
+    container_name: smritisetu-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ml-service:
+        condition: service_started
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-smritisetu}:${POSTGRES_PASSWORD:-smritisetu_dev}@postgres:5432/${POSTGRES_DB:-smritisetu}?schema=public
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-dev_access_secret_change_me}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev_refresh_secret_change_me}
+      MEDIA_SIGNING_SECRET: ${MEDIA_SIGNING_SECRET:-dev_media_signing_secret_change_me}
+      MEDIA_LOCAL_DIR: /app/storage/media
+      ML_SERVICE_URL: http://ml-service:8000
+      ML_SERVICE_ENABLED: ${ML_SERVICE_ENABLED:-true}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8081,http://localhost:19006}
+      FCM_ENABLED: ${FCM_ENABLED:-false}
+    ports:
+      - "4000:4000"
+    volumes:
+      - media_data:/app/storage/media
+    command: sh -c "npx prisma migrate deploy && node dist/src/server.js"
+
+volumes:
+  postgres_data:
+  media_data:
+  tts_generated:

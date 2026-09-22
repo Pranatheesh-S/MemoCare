@@ -1,0 +1,29 @@
+{
+  "name": "smritisetu-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SmritiSetu AI — offline-first cognitive gaming and memory assistance for elderly dementia patients (North East India)",
+  "workspaces": [
+    "packages/*",
+    "services/backend-api",
+    "apps/*"
+  ],
+  "scripts": {
+    "build:types": "npm run build -w @smritisetu/shared-types",
+    "build:backend": "npm run build -w @smritisetu/backend-api",
+    "dev:backend": "npm run dev -w @smritisetu/backend-api",
+    "dev:mobile": "npm run start -w @smritisetu/patient-mobile",
+    "test:backend": "npm run test -w @smritisetu/backend-api",
+    "test:mobile": "npm test -w @smritisetu/patient-mobile",
+    "test:ml": "cd services/ml-service && python -m pytest -q",
+    "test:tts": "cd services/tts-service && python -m pytest -q",
+    "db:migrate": "npm run db:migrate -w @smritisetu/backend-api",
+    "db:seed": "npm run db:seed -w @smritisetu/backend-api",
+    "typecheck": "npm run typecheck -w @smritisetu/shared-types && npm run typecheck -w @smritisetu/backend-api && npm run typecheck -w @smritisetu/patient-mobile",
+    "test:integration": "npm run test:integration -w @smritisetu/patient-mobile",
+    "test:all": "npm run test:backend && npm run test:mobile && npm run test:ml && npm run test:tts"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
