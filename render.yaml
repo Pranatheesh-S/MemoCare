@@ -17,7 +17,11 @@ services:
         fromDatabase:
           name: smritisetu-db
           property: connectionString
-      - key: JWT_SECRET
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: MEDIA_SIGNING_SECRET
         generateValue: true
       - key: PORT
         value: 4000
