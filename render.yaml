@@ -11,7 +11,7 @@ services:
     plan: free
     rootDir: smritisetu-ai
     buildCommand: npm install --include=dev && npm run build:types && npm run db:generate -w @smritisetu/backend-api && npm run build:backend
-    startCommand: npm run db:deploy -w @smritisetu/backend-api && npm run start -w @smritisetu/backend-api
+    startCommand: npm run db:deploy -w @smritisetu/backend-api && npm run db:seed -w @smritisetu/backend-api && npm run start -w @smritisetu/backend-api
     envVars:
       - key: DATABASE_URL
         fromDatabase:
