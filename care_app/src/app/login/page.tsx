@@ -84,10 +84,12 @@ function LoginForm() {
             {submitting ? "Signing in…" : "Sign in"}
           </Button>
           <div className="rounded-lg bg-[var(--color-mist)] p-3 text-xs text-[var(--color-ink-muted)]">
-            <p>
-              Sign in with your care network email. If you need access, ask your
-              administrator.
-            </p>
+            <p className="font-semibold mb-1">Demo Credentials:</p>
+            <ul className="list-disc pl-4 space-y-1">
+              <li><strong>Caregiver:</strong> daughter@smritisetu.demo / Caregiver#2026</li>
+              <li><strong>Health Worker:</strong> asha@smritisetu.demo / AshaWorker#2026</li>
+              <li><strong>Admin:</strong> admin@smritisetu.demo / AdminUser#2026</li>
+            </ul>
           </div>
         </form>
       </div>
