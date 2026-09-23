@@ -8,6 +8,7 @@ services:
   - type: web
     name: memocare-backend-api
     env: node
+    plan: free
     rootDir: smritisetu-ai
     buildCommand: npm install && npm run build:backend
     startCommand: npm run db:deploy -w @smritisetu/backend-api && npm run start -w @smritisetu/backend-api
@@ -24,6 +25,7 @@ services:
   - type: web
     name: memocare-ml-service
     env: python
+    plan: free
     rootDir: smritisetu-ai/services/ml-service
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
