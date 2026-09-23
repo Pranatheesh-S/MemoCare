@@ -1,0 +1,8 @@
+# API layer only. Deliberately light: the service must start, serve cached
+# audio and report its health on a machine that has never installed torch.
+# The model itself lives in requirements-model.txt.
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.10.3
+numpy==2.1.3
+python-dotenv==1.0.1

@@ -1,0 +1,13 @@
+# Qwen3-TTS and its runtime. Install this only where speech is actually
+# generated: a developer working on the app can run everything else without it
+# (TTS_ENABLED=false), and the app falls back to the device's own voice.
+#
+# Install torch for your platform FIRST if you need a specific CUDA build:
+#   https://pytorch.org/get-started/locally/
+-r requirements.txt
+torch>=2.4.0
+qwen-tts>=0.1.0
+soundfile>=0.12.1
+
+# Optional, CUDA only — faster attention. Skip on Apple Silicon and CPU:
+#   pip install -U flash-attn --no-build-isolation

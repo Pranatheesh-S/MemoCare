@@ -1,0 +1,1168 @@
+{
+  "version": 1,
+  "engine": "qwen3-tts-1.0.0",
+  "voice": "my_voice.wav",
+  "generatedAt": "2026-09-01T04:10:47+00:00",
+  "languages": {
+    "en": {
+      "app.notEmergencyService": {
+        "file": "en/app_notemergencyservice.wav",
+        "hash": "a9f907c6cc7ed9d0",
+        "duration": 6.56,
+        "category": "common"
+      },
+      "callFamily.empty": {
+        "file": "en/callfamily_empty.wav",
+        "hash": "ac2b10d4a6a8491a",
+        "duration": 2.72,
+        "category": "help"
+      },
+      "callFamily.title": {
+        "file": "en/callfamily_title.wav",
+        "hash": "6bcb7f66f9b947cb",
+        "duration": 1.92,
+        "category": "help"
+      },
+      "callFamily.unavailable": {
+        "file": "en/callfamily_unavailable.wav",
+        "hash": "38b205bd5a3a4586",
+        "duration": 3.12,
+        "category": "help"
+      },
+      "common.back": {
+        "file": "en/common_back.wav",
+        "hash": "76900f1bfd16c8d4",
+        "duration": 1.04,
+        "category": "common"
+      },
+      "common.cancel": {
+        "file": "en/common_cancel.wav",
+        "hash": "19766ed6ccb2f4a3",
+        "duration": 0.88,
+        "category": "common"
+      },
+      "common.close": {
+        "file": "en/common_close.wav",
+        "hash": "7d9eb7acb13e2462",
+        "duration": 1.12,
+        "category": "common"
+      },
+      "common.confirm": {
+        "file": "en/common_confirm.wav",
+        "hash": "f0762c4f3bfcd695",
+        "duration": 0.8,
+        "category": "common"
+      },
+      "common.done": {
+        "file": "en/common_done.wav",
+        "hash": "11a6767d5674c7e4",
+        "duration": 0.64,
+        "category": "common"
+      },
+      "common.exitConfirm": {
+        "file": "en/common_exitconfirm.wav",
+        "hash": "ee75ae5661b5bdfa",
+        "duration": 2.56,
+        "category": "common"
+      },
+      "common.goHome": {
+        "file": "en/common_gohome.wav",
+        "hash": "dc2f595d5903da76",
+        "duration": 1.2,
+        "category": "common"
+      },
+      "common.home": {
+        "file": "en/common_home.wav",
+        "hash": "3a78695388b38b5c",
+        "duration": 1.12,
+        "category": "common"
+      },
+      "common.listen": {
+        "file": "en/common_listen.wav",
+        "hash": "225d29f6201e1a63",
+        "duration": 0.96,
+        "category": "common"
+      },
+      "common.loading": {
+        "file": "en/common_loading.wav",
+        "hash": "b4ef52cd3996122a",
+        "duration": 1.44,
+        "category": "common"
+      },
+      "common.next": {
+        "file": "en/common_next.wav",
+        "hash": "1ff57a29d7c9d11b",
+        "duration": 0.56,
+        "category": "common"
+      },
+      "common.no": {
+        "file": "en/common_no.wav",
+        "hash": "1ea442a134b2a184",
+        "duration": 0.72,
+        "category": "common"
+      },
+      "common.ok": {
+        "file": "en/common_ok.wav",
+        "hash": "565339bc4d33d728",
+        "duration": 0.72,
+        "category": "common"
+      },
+      "common.pause": {
+        "file": "en/common_pause.wav",
+        "hash": "858e4ba7a29fd38b",
+        "duration": 0.96,
+        "category": "common"
+      },
+      "common.play": {
+        "file": "en/common_play.wav",
+        "hash": "436e61016e26fcb7",
+        "duration": 25.52,
+        "category": "common"
+      },
+      "common.previous": {
+        "file": "en/common_previous.wav",
+        "hash": "a57b08a480b822a0",
+        "duration": 0.88,
+        "category": "common"
+      },
+      "common.repeat": {
+        "file": "en/common_repeat.wav",
+        "hash": "6c5b6c354ec003c0",
+        "duration": 1.92,
+        "category": "common"
+      },
+      "common.retry": {
+        "file": "en/common_retry.wav",
+        "hash": "d8b8392e2c542950",
+        "duration": 1.12,
+        "category": "common"
+      },
+      "common.settings": {
+        "file": "en/common_settings.wav",
+        "hash": "74a883a037bc227f",
+        "duration": 0.96,
+        "category": "common"
+      },
+      "common.stay": {
+        "file": "en/common_stay.wav",
+        "hash": "ef8d633e03c42ae1",
+        "duration": 0.48,
+        "category": "common"
+      },
+      "common.switchToAssamese": {
+        "file": "en/common_switchtoassamese.wav",
+        "hash": "7565f41e98f64fd1",
+        "duration": 1.68,
+        "category": "common"
+      },
+      "common.switchToEnglish": {
+        "file": "en/common_switchtoenglish.wav",
+        "hash": "5f434646ab9efeaf",
+        "duration": 1.52,
+        "category": "common"
+      },
+      "common.yes": {
+        "file": "en/common_yes.wav",
+        "hash": "85a39ab345d672ff",
+        "duration": 0.24,
+        "category": "common"
+      },
+      "companion.connecting": {
+        "file": "en/companion_connecting.wav",
+        "hash": "2e3af035c1d54bb8",
+        "duration": 1.84,
+        "category": "chatbot"
+      },
+      "companion.connectionHint": {
+        "file": "en/companion_connectionhint.wav",
+        "hash": "8cfc7d2088510d07",
+        "duration": 2.8,
+        "category": "chatbot"
+      },
+      "companion.endConfirm": {
+        "file": "en/companion_endconfirm.wav",
+        "hash": "dd88b606f739169f",
+        "duration": 4.08,
+        "category": "chatbot"
+      },
+      "companion.endSession": {
+        "file": "en/companion_endsession.wav",
+        "hash": "0b92df06cfd8adff",
+        "duration": 1.28,
+        "category": "chatbot"
+      },
+      "companion.fallbackOpening.memoryLane": {
+        "file": "en/companion_fallbackopening_memorylane.wav",
+        "hash": "723dc21f9bb1383b",
+        "duration": 6.88,
+        "category": "chatbot"
+      },
+      "companion.fallbackOpening.routineChat": {
+        "file": "en/companion_fallbackopening_routinechat.wav",
+        "hash": "0635909577954c0a",
+        "duration": 5.2,
+        "category": "chatbot"
+      },
+      "companion.fallbackOpening.storyCompletion": {
+        "file": "en/companion_fallbackopening_storycompletion.wav",
+        "hash": "712fb2df1c0b628f",
+        "duration": 7.76,
+        "category": "chatbot"
+      },
+      "companion.flow.family": {
+        "file": "en/companion_flow_family.wav",
+        "hash": "79fd1a448190bbdc",
+        "duration": 2.16,
+        "category": "chatbot"
+      },
+      "companion.flow.memoryLane": {
+        "file": "en/companion_flow_memorylane.wav",
+        "hash": "635450094e010baf",
+        "duration": 1.6,
+        "category": "chatbot"
+      },
+      "companion.flow.routine": {
+        "file": "en/companion_flow_routine.wav",
+        "hash": "0006ef5e1238c6d7",
+        "duration": 1.2,
+        "category": "chatbot"
+      },
+      "companion.flow.story": {
+        "file": "en/companion_flow_story.wav",
+        "hash": "077e4f59d72490dd",
+        "duration": 1.04,
+        "category": "chatbot"
+      },
+      "companion.headerSubtitle": {
+        "file": "en/companion_headersubtitle.wav",
+        "hash": "b3349bd77083b0ad",
+        "duration": 2.48,
+        "category": "chatbot"
+      },
+      "companion.listening": {
+        "file": "en/companion_listening.wav",
+        "hash": "d697156ce78996d4",
+        "duration": 1.52,
+        "category": "chatbot"
+      },
+      "companion.quickReplies.family": {
+        "file": "en/companion_quickreplies_family.wav",
+        "hash": "045738b230360495",
+        "duration": 1.84,
+        "category": "chatbot"
+      },
+      "companion.quickReplies.festival": {
+        "file": "en/companion_quickreplies_festival.wav",
+        "hash": "b1fd6545911d1f74",
+        "duration": 1.6,
+        "category": "chatbot"
+      },
+      "companion.quickReplies.happy": {
+        "file": "en/companion_quickreplies_happy.wav",
+        "hash": "363a3b09a069c497",
+        "duration": 2.32,
+        "category": "chatbot"
+      },
+      "companion.quickReplies.hello": {
+        "file": "en/companion_quickreplies_hello.wav",
+        "hash": "0bda053b271a2d42",
+        "duration": 1.52,
+        "category": "chatbot"
+      },
+      "companion.quickReplies.tea": {
+        "file": "en/companion_quickreplies_tea.wav",
+        "hash": "0ce814b2d2a47ba8",
+        "duration": 1.36,
+        "category": "chatbot"
+      },
+      "companion.quickReplies.tellMore": {
+        "file": "en/companion_quickreplies_tellmore.wav",
+        "hash": "b8a737607ad5764f",
+        "duration": 1.52,
+        "category": "chatbot"
+      },
+      "companion.send": {
+        "file": "en/companion_send.wav",
+        "hash": "f6f4688ff23d50c6",
+        "duration": 1.44,
+        "category": "chatbot"
+      },
+      "companion.speaking": {
+        "file": "en/companion_speaking.wav",
+        "hash": "345c406901bb653c",
+        "duration": 1.6,
+        "category": "chatbot"
+      },
+      "companion.tapToSpeak": {
+        "file": "en/companion_taptospeak.wav",
+        "hash": "80ef95ce365e9055",
+        "duration": 1.12,
+        "category": "chatbot"
+      },
+      "companion.tapToStop": {
+        "file": "en/companion_taptostop.wav",
+        "hash": "dc9155c3e5232563",
+        "duration": 1.52,
+        "category": "chatbot"
+      },
+      "companion.thinking": {
+        "file": "en/companion_thinking.wav",
+        "hash": "fb786e2adbad070e",
+        "duration": 1.12,
+        "category": "chatbot"
+      },
+      "companion.title": {
+        "file": "en/companion_title.wav",
+        "hash": "d8a054543c14dd55",
+        "duration": 1.84,
+        "category": "chatbot"
+      },
+      "companion.typeMessage": {
+        "file": "en/companion_typemessage.wav",
+        "hash": "d003d58460e54737",
+        "duration": 1.6,
+        "category": "chatbot"
+      },
+      "companion.typePlaceholder": {
+        "file": "en/companion_typeplaceholder.wav",
+        "hash": "ff0b1f1f1c5e5110",
+        "duration": 1.68,
+        "category": "chatbot"
+      },
+      "errors.audioUnavailable": {
+        "file": "en/errors_audiounavailable.wav",
+        "hash": "80bad64addd575a3",
+        "duration": 4.64,
+        "category": "errors"
+      },
+      "errors.callPermission": {
+        "file": "en/errors_callpermission.wav",
+        "hash": "38b205bd5a3a4586",
+        "duration": 3.28,
+        "category": "errors"
+      },
+      "errors.generic": {
+        "file": "en/errors_generic.wav",
+        "hash": "5f34676fbee23e9c",
+        "duration": 2.88,
+        "category": "errors"
+      },
+      "errors.noGames": {
+        "file": "en/errors_nogames.wav",
+        "hash": "93c25c3b29ed6d61",
+        "duration": 1.68,
+        "category": "errors"
+      },
+      "errors.noInternet": {
+        "file": "en/errors_nointernet.wav",
+        "hash": "ade464e90a985000",
+        "duration": 3.76,
+        "category": "errors"
+      },
+      "errors.noMemories": {
+        "file": "en/errors_nomemories.wav",
+        "hash": "a9b2970cb7cc146b",
+        "duration": 3.12,
+        "category": "errors"
+      },
+      "errors.notificationPermission": {
+        "file": "en/errors_notificationpermission.wav",
+        "hash": "508272aa9c45fec4",
+        "duration": 3.76,
+        "category": "errors"
+      },
+      "errors.serverUnavailable": {
+        "file": "en/errors_serverunavailable.wav",
+        "hash": "b513450025a8e0c3",
+        "duration": 3.12,
+        "category": "errors"
+      },
+      "errors.sessionExpired": {
+        "file": "en/errors_sessionexpired.wav",
+        "hash": "19c31442608ca7a5",
+        "duration": 3.44,
+        "category": "errors"
+      },
+      "errors.syncFailed": {
+        "file": "en/errors_syncfailed.wav",
+        "hash": "34f325268409b696",
+        "duration": 3.92,
+        "category": "errors"
+      },
+      "games.atYourPace": {
+        "file": "en/games_atyourpace.wav",
+        "hash": "7ef2a9d5899100d4",
+        "duration": 1.76,
+        "category": "games"
+      },
+      "games.doingWell": {
+        "file": "en/games_doingwell.wav",
+        "hash": "99692c1eedee7f1d",
+        "duration": 4.8,
+        "category": "games"
+      },
+      "games.endWithCalm": {
+        "file": "en/games_endwithcalm.wav",
+        "hash": "9762b73fb8bb5f51",
+        "duration": 1.84,
+        "category": "games"
+      },
+      "games.finish": {
+        "file": "en/games_finish.wav",
+        "hash": "a6c7a84baa6750fc",
+        "duration": 1.2,
+        "category": "games"
+      },
+      "games.goodAttempt": {
+        "file": "en/games_goodattempt.wav",
+        "hash": "720fa58648d58db7",
+        "duration": 4.48,
+        "category": "games"
+      },
+      "games.hint": {
+        "file": "en/games_hint.wav",
+        "hash": "26b3d78a08066081",
+        "duration": 1.44,
+        "category": "games"
+      },
+      "games.memoryLane": {
+        "file": "en/games_memorylane.wav",
+        "hash": "635450094e010baf",
+        "duration": 1.04,
+        "category": "games"
+      },
+      "games.memoryLaneTarget": {
+        "file": "en/games_memorylanetarget.wav",
+        "hash": "8edf6c691a5da60a",
+        "duration": 1.92,
+        "category": "games"
+      },
+      "games.memoryMatch": {
+        "file": "en/games_memorymatch.wav",
+        "hash": "30cba2445719361c",
+        "duration": 1.36,
+        "category": "games"
+      },
+      "games.memoryMatchTarget": {
+        "file": "en/games_memorymatchtarget.wav",
+        "hash": "0938ff088bf9878e",
+        "duration": 1.68,
+        "category": "games"
+      },
+      "games.playAgain": {
+        "file": "en/games_playagain.wav",
+        "hash": "5ef30d27f8bc261c",
+        "duration": 0.88,
+        "category": "games"
+      },
+      "games.routineBuilder": {
+        "file": "en/games_routinebuilder.wav",
+        "hash": "0cb5a46bf82b4703",
+        "duration": 1.04,
+        "category": "games"
+      },
+      "games.routineBuilderTarget": {
+        "file": "en/games_routinebuildertarget.wav",
+        "hash": "7b8bfa34675ec2d7",
+        "duration": 1.6,
+        "category": "games"
+      },
+      "games.start": {
+        "file": "en/games_start.wav",
+        "hash": "e4bb9f1ece9af926",
+        "duration": 1.12,
+        "category": "games"
+      },
+      "games.storyRecall": {
+        "file": "en/games_storyrecall.wav",
+        "hash": "3e565509ee69a763",
+        "duration": 1.44,
+        "category": "games"
+      },
+      "games.storyRecallTarget": {
+        "file": "en/games_storyrecalltarget.wav",
+        "hash": "3fe0337f459de7bf",
+        "duration": 1.28,
+        "category": "games"
+      },
+      "games.suggested": {
+        "file": "en/games_suggested.wav",
+        "hash": "fe079cfa9423c6c2",
+        "duration": 1.6,
+        "category": "games"
+      },
+      "games.thankYou": {
+        "file": "en/games_thankyou.wav",
+        "hash": "b7219164650b1b7f",
+        "duration": 5.36,
+        "category": "games"
+      },
+      "games.title": {
+        "file": "en/games_title.wav",
+        "hash": "05503d1e76cefaa4",
+        "duration": 1.2,
+        "category": "games"
+      },
+      "games.tryTogether": {
+        "file": "en/games_trytogether.wav",
+        "hash": "e7c7db50aedd5a12",
+        "duration": 3.84,
+        "category": "games"
+      },
+      "games.useHint": {
+        "file": "en/games_usehint.wav",
+        "hash": "8c33db413ccba1f4",
+        "duration": 1.12,
+        "category": "games"
+      },
+      "games.wellDone": {
+        "file": "en/games_welldone.wav",
+        "hash": "03bff6b51c2b6674",
+        "duration": 5.92,
+        "category": "games"
+      },
+      "games.whoIsThis": {
+        "file": "en/games_whoisthis.wav",
+        "hash": "402c22ffefc2d63f",
+        "duration": 6.16,
+        "category": "games"
+      },
+      "games.whoIsThisTarget": {
+        "file": "en/games_whoisthistarget.wav",
+        "hash": "e97790218f328fd3",
+        "duration": 1.84,
+        "category": "games"
+      },
+      "help.callNow": {
+        "file": "en/help_callnow.wav",
+        "hash": "957365511b499723",
+        "duration": 2.08,
+        "category": "help"
+      },
+      "help.confirm": {
+        "file": "en/help_confirm.wav",
+        "hash": "983e534457abda60",
+        "duration": 3.36,
+        "category": "help"
+      },
+      "help.confirmNo": {
+        "file": "en/help_confirmno.wav",
+        "hash": "fed1b0d7b0601242",
+        "duration": 1.84,
+        "category": "help"
+      },
+      "help.confirmYes": {
+        "file": "en/help_confirmyes.wav",
+        "hash": "1d19f078073fec27",
+        "duration": 1.68,
+        "category": "help"
+      },
+      "help.pending": {
+        "file": "en/help_pending.wav",
+        "hash": "ff3cd930629089bb",
+        "duration": 8.32,
+        "category": "help"
+      },
+      "help.sent": {
+        "file": "en/help_sent.wav",
+        "hash": "fc24fe31414c3d7e",
+        "duration": 3.6,
+        "category": "help"
+      },
+      "help.title": {
+        "file": "en/help_title.wav",
+        "hash": "200ea5541aeb6ad3",
+        "duration": 1.12,
+        "category": "help"
+      },
+      "home.callFamily": {
+        "file": "en/home_callfamily.wav",
+        "hash": "6bcb7f66f9b947cb",
+        "duration": 1.52,
+        "category": "home"
+      },
+      "home.choose": {
+        "file": "en/home_choose.wav",
+        "hash": "8d33b16141143fab",
+        "duration": 2.4,
+        "category": "home"
+      },
+      "home.myDay": {
+        "file": "en/home_myday.wav",
+        "hash": "300b0ee3d069d0ef",
+        "duration": 0.96,
+        "category": "home"
+      },
+      "home.myMemories": {
+        "file": "en/home_mymemories.wav",
+        "hash": "9b49c701207d1639",
+        "duration": 1.36,
+        "category": "home"
+      },
+      "home.needHelp": {
+        "file": "en/home_needhelp.wav",
+        "hash": "200ea5541aeb6ad3",
+        "duration": 0.96,
+        "category": "home"
+      },
+      "home.neverSynced": {
+        "file": "en/home_neversynced.wav",
+        "hash": "12b873063fe33bcc",
+        "duration": 2.08,
+        "category": "home"
+      },
+      "home.noNextRoutine": {
+        "file": "en/home_nonextroutine.wav",
+        "hash": "e63c82db0a97cafd",
+        "duration": 2.72,
+        "category": "home"
+      },
+      "home.offline": {
+        "file": "en/home_offline.wav",
+        "hash": "fd163889f906adfc",
+        "duration": 1.76,
+        "category": "home"
+      },
+      "home.online": {
+        "file": "en/home_online.wav",
+        "hash": "22965568d22a14ee",
+        "duration": 1.2,
+        "category": "home"
+      },
+      "home.playGames": {
+        "file": "en/home_playgames.wav",
+        "hash": "05503d1e76cefaa4",
+        "duration": 1.28,
+        "category": "home"
+      },
+      "home.talkCompanion": {
+        "file": "en/home_talkcompanion.wav",
+        "hash": "d8a054543c14dd55",
+        "duration": 1.68,
+        "category": "home"
+      },
+      "memories.addFavourite": {
+        "file": "en/memories_addfavourite.wav",
+        "hash": "9e619bff6d556032",
+        "duration": 1.52,
+        "category": "memories"
+      },
+      "memories.empty": {
+        "file": "en/memories_empty.wav",
+        "hash": "505cf3ec074519d7",
+        "duration": 3.04,
+        "category": "memories"
+      },
+      "memories.favourite": {
+        "file": "en/memories_favourite.wav",
+        "hash": "e39b24993c31d7bb",
+        "duration": 0.24,
+        "category": "memories"
+      },
+      "memories.removeFavourite": {
+        "file": "en/memories_removefavourite.wav",
+        "hash": "a5bdecedf4ee6419",
+        "duration": 1.68,
+        "category": "memories"
+      },
+      "memories.title": {
+        "file": "en/memories_title.wav",
+        "hash": "9b49c701207d1639",
+        "duration": 0.88,
+        "category": "memories"
+      },
+      "memories.unavailable": {
+        "file": "en/memories_unavailable.wav",
+        "hash": "73da2482504dcbf4",
+        "duration": 2.48,
+        "category": "memories"
+      },
+      "memoryLane.finish": {
+        "file": "en/memorylane_finish.wav",
+        "hash": "76aec18b81276849",
+        "duration": 4.64,
+        "category": "games"
+      },
+      "memoryLane.instruction": {
+        "file": "en/memorylane_instruction.wav",
+        "hash": "92f45d2c9d75ba94",
+        "duration": 2.88,
+        "category": "games"
+      },
+      "memoryLane.repeatStory": {
+        "file": "en/memorylane_repeatstory.wav",
+        "hash": "5279b1b74d035ff5",
+        "duration": 2.08,
+        "category": "games"
+      },
+      "memoryMatch.doneForToday": {
+        "file": "en/memorymatch_donefortoday.wav",
+        "hash": "746c81381e543f65",
+        "duration": 1.12,
+        "category": "games"
+      },
+      "memoryMatch.enoughForToday": {
+        "file": "en/memorymatch_enoughfortoday.wav",
+        "hash": "9cc754d153b24f62",
+        "duration": 5.04,
+        "category": "games"
+      },
+      "memoryMatch.instruction": {
+        "file": "en/memorymatch_instruction.wav",
+        "hash": "b1627318d8461404",
+        "duration": 4.4,
+        "category": "games"
+      },
+      "memoryMatch.nextRound": {
+        "file": "en/memorymatch_nextround.wav",
+        "hash": "a36ec7f69a24aa04",
+        "duration": 4.24,
+        "category": "games"
+      },
+      "memoryMatch.playNext": {
+        "file": "en/memorymatch_playnext.wav",
+        "hash": "cb1f9e40a115554d",
+        "duration": 1.68,
+        "category": "games"
+      },
+      "memoryMatch.preview": {
+        "file": "en/memorymatch_preview.wav",
+        "hash": "e7a5c130ae14926a",
+        "duration": 3.28,
+        "category": "games"
+      },
+      "memoryMatch.tryAnother": {
+        "file": "en/memorymatch_tryanother.wav",
+        "hash": "cf81bb614ad13fd6",
+        "duration": 655.28,
+        "category": "games"
+      },
+      "myDay.acknowledged": {
+        "file": "en/myday_acknowledged.wav",
+        "hash": "519fe388b960fbc2",
+        "duration": 1.52,
+        "category": "reminders"
+      },
+      "myDay.done": {
+        "file": "en/myday_done.wav",
+        "hash": "11a6767d5674c7e4",
+        "duration": 0.64,
+        "category": "reminders"
+      },
+      "myDay.due": {
+        "file": "en/myday_due.wav",
+        "hash": "1048a797ea1cc848",
+        "duration": 0.96,
+        "category": "reminders"
+      },
+      "myDay.empty": {
+        "file": "en/myday_empty.wav",
+        "hash": "481c80107cbcfe4e",
+        "duration": 2.32,
+        "category": "reminders"
+      },
+      "myDay.kind.APPOINTMENT": {
+        "file": "en/myday_kind_appointment.wav",
+        "hash": "8a4f957e08cbc33d",
+        "duration": 1.12,
+        "category": "reminders"
+      },
+      "myDay.kind.EXERCISE": {
+        "file": "en/myday_kind_exercise.wav",
+        "hash": "0dcb1fd2ba66a14a",
+        "duration": 1.84,
+        "category": "reminders"
+      },
+      "myDay.kind.FAMILY_CHECK_IN": {
+        "file": "en/myday_kind_family_check_in.wav",
+        "hash": "bc1793b914b5d6d8",
+        "duration": 0.88,
+        "category": "reminders"
+      },
+      "myDay.kind.HYDRATION": {
+        "file": "en/myday_kind_hydration.wav",
+        "hash": "7ca7dea906800f87",
+        "duration": 1.12,
+        "category": "reminders"
+      },
+      "myDay.kind.MEAL": {
+        "file": "en/myday_kind_meal.wav",
+        "hash": "c3940d7d61c8703b",
+        "duration": 0.64,
+        "category": "reminders"
+      },
+      "myDay.kind.MEDICINE": {
+        "file": "en/myday_kind_medicine.wav",
+        "hash": "c4d3d42ed3a4f2ba",
+        "duration": 0.88,
+        "category": "reminders"
+      },
+      "myDay.kind.SLEEP": {
+        "file": "en/myday_kind_sleep.wav",
+        "hash": "05863ec2c3789276",
+        "duration": 0.64,
+        "category": "reminders"
+      },
+      "myDay.missed": {
+        "file": "en/myday_missed.wav",
+        "hash": "503c6c6bca59aae5",
+        "duration": 1.12,
+        "category": "reminders"
+      },
+      "myDay.needHelp": {
+        "file": "en/myday_needhelp.wav",
+        "hash": "200ea5541aeb6ad3",
+        "duration": 1.36,
+        "category": "reminders"
+      },
+      "myDay.remindAgain": {
+        "file": "en/myday_remindagain.wav",
+        "hash": "4f76e078f7942ef0",
+        "duration": 0.88,
+        "category": "reminders"
+      },
+      "myDay.snoozed": {
+        "file": "en/myday_snoozed.wav",
+        "hash": "8c2aa0271678a85a",
+        "duration": 1.44,
+        "category": "reminders"
+      },
+      "myDay.title": {
+        "file": "en/myday_title.wav",
+        "hash": "300b0ee3d069d0ef",
+        "duration": 0.88,
+        "category": "reminders"
+      },
+      "myDay.today": {
+        "file": "en/myday_today.wav",
+        "hash": "2b065c7c9ce466e5",
+        "duration": 0.8,
+        "category": "reminders"
+      },
+      "myDay.upcoming": {
+        "file": "en/myday_upcoming.wav",
+        "hash": "b743c760826caba4",
+        "duration": 0.72,
+        "category": "reminders"
+      },
+      "pairing.caregiverOnly": {
+        "file": "en/pairing_caregiveronly.wav",
+        "hash": "3c993f3430c5f2e7",
+        "duration": 1.92,
+        "category": "onboarding"
+      },
+      "pairing.codeLabel": {
+        "file": "en/pairing_codelabel.wav",
+        "hash": "61c23f26aa635261",
+        "duration": 1.92,
+        "category": "onboarding"
+      },
+      "pairing.connecting": {
+        "file": "en/pairing_connecting.wav",
+        "hash": "72021eb70e91b4d5",
+        "duration": 1.52,
+        "category": "onboarding"
+      },
+      "pairing.demoMode": {
+        "file": "en/pairing_demomode.wav",
+        "hash": "8e231f4cff67a96b",
+        "duration": 2.24,
+        "category": "onboarding"
+      },
+      "pairing.downloading": {
+        "file": "en/pairing_downloading.wav",
+        "hash": "43a0fdbcf41d1185",
+        "duration": 2.96,
+        "category": "onboarding"
+      },
+      "pairing.expired": {
+        "file": "en/pairing_expired.wav",
+        "hash": "2cfca8b5b6f4f683",
+        "duration": 5.04,
+        "category": "onboarding"
+      },
+      "pairing.handoffAction": {
+        "file": "en/pairing_handoffaction.wav",
+        "hash": "1eb7f67a296562ec",
+        "duration": 1.6,
+        "category": "onboarding"
+      },
+      "pairing.handoffBody": {
+        "file": "en/pairing_handoffbody.wav",
+        "hash": "1552abdfc80c9db6",
+        "duration": 5.2,
+        "category": "onboarding"
+      },
+      "pairing.handoffTitle": {
+        "file": "en/pairing_handofftitle.wav",
+        "hash": "def3fe1fbee6d2f5",
+        "duration": 2.24,
+        "category": "onboarding"
+      },
+      "pairing.instruction": {
+        "file": "en/pairing_instruction.wav",
+        "hash": "5da0c845ac66df14",
+        "duration": 3.28,
+        "category": "onboarding"
+      },
+      "pairing.invalid": {
+        "file": "en/pairing_invalid.wav",
+        "hash": "25fb1f473ddb7fd3",
+        "duration": 5.76,
+        "category": "onboarding"
+      },
+      "pairing.offline": {
+        "file": "en/pairing_offline.wav",
+        "hash": "07808d05df386dd4",
+        "duration": 4.96,
+        "category": "onboarding"
+      },
+      "pairing.submit": {
+        "file": "en/pairing_submit.wav",
+        "hash": "1a2303ede07493ac",
+        "duration": 0.96,
+        "category": "onboarding"
+      },
+      "pairing.successAction": {
+        "file": "en/pairing_successaction.wav",
+        "hash": "31fbef162594de01",
+        "duration": 0.88,
+        "category": "onboarding"
+      },
+      "pairing.successBody": {
+        "file": "en/pairing_successbody.wav",
+        "hash": "a089d04a504781a9",
+        "duration": 2.24,
+        "category": "onboarding"
+      },
+      "pairing.successTitle": {
+        "file": "en/pairing_successtitle.wav",
+        "hash": "4dd6d27a466e4016",
+        "duration": 1.84,
+        "category": "onboarding"
+      },
+      "pairing.title": {
+        "file": "en/pairing_title.wav",
+        "hash": "b927e0a08f080f76",
+        "duration": 2.0,
+        "category": "onboarding"
+      },
+      "pairing.useLetterCode": {
+        "file": "en/pairing_uselettercode.wav",
+        "hash": "4136a8765ddac50a",
+        "duration": 2.0,
+        "category": "onboarding"
+      },
+      "pairing.useNumberPad": {
+        "file": "en/pairing_usenumberpad.wav",
+        "hash": "7177b175e2f24f2a",
+        "duration": 1.92,
+        "category": "onboarding"
+      },
+      "profile.continue": {
+        "file": "en/profile_continue.wav",
+        "hash": "31fbef162594de01",
+        "duration": 0.88,
+        "category": "onboarding"
+      },
+      "profile.title": {
+        "file": "en/profile_title.wav",
+        "hash": "07e1e0d65c46a667",
+        "duration": 1.36,
+        "category": "onboarding"
+      },
+      "routineBuilder.check": {
+        "file": "en/routinebuilder_check.wav",
+        "hash": "d8f7d4812e3d4ed9",
+        "duration": 1.76,
+        "category": "games"
+      },
+      "routineBuilder.correct": {
+        "file": "en/routinebuilder_correct.wav",
+        "hash": "53b0deeede203b80",
+        "duration": 4.88,
+        "category": "games"
+      },
+      "routineBuilder.instruction": {
+        "file": "en/routinebuilder_instruction.wav",
+        "hash": "05e9c47967bbdc38",
+        "duration": 4.72,
+        "category": "games"
+      },
+      "routineBuilder.moveDown": {
+        "file": "en/routinebuilder_movedown.wav",
+        "hash": "40bb50da160cdc21",
+        "duration": 1.28,
+        "category": "games"
+      },
+      "routineBuilder.moveUp": {
+        "file": "en/routinebuilder_moveup.wav",
+        "hash": "c66feb5eb8f217c7",
+        "duration": 0.96,
+        "category": "games"
+      },
+      "routineBuilder.partial": {
+        "file": "en/routinebuilder_partial.wav",
+        "hash": "b4a2195739760eae",
+        "duration": 4.88,
+        "category": "games"
+      },
+      "routineBuilder.selectFirst": {
+        "file": "en/routinebuilder_selectfirst.wav",
+        "hash": "cd07668f62d94d37",
+        "duration": 2.32,
+        "category": "games"
+      },
+      "settings.assamese": {
+        "file": "en/settings_assamese.wav",
+        "hash": "d9e223e9df1420fd",
+        "duration": 2.0,
+        "category": "settings"
+      },
+      "settings.audioGuidance": {
+        "file": "en/settings_audioguidance.wav",
+        "hash": "d2165b7717ac2550",
+        "duration": 1.44,
+        "category": "settings"
+      },
+      "settings.autoNarration": {
+        "file": "en/settings_autonarration.wav",
+        "hash": "cdc32f80122f9ce3",
+        "duration": 1.68,
+        "category": "settings"
+      },
+      "settings.downloadLanguage": {
+        "file": "en/settings_downloadlanguage.wav",
+        "hash": "19b4897a10eb593d",
+        "duration": 2.16,
+        "category": "settings"
+      },
+      "settings.english": {
+        "file": "en/settings_english.wav",
+        "hash": "ba118bf7fc9c1aed",
+        "duration": 0.96,
+        "category": "settings"
+      },
+      "settings.language": {
+        "file": "en/settings_language.wav",
+        "hash": "a4fe65264ef7dbb3",
+        "duration": 0.88,
+        "category": "settings"
+      },
+      "settings.largeText": {
+        "file": "en/settings_largetext.wav",
+        "hash": "cd0f290b3297291e",
+        "duration": 1.28,
+        "category": "settings"
+      },
+      "settings.reducedMotion": {
+        "file": "en/settings_reducedmotion.wav",
+        "hash": "af0c3ab65a6d89db",
+        "duration": 1.2,
+        "category": "settings"
+      },
+      "settings.syncStatus": {
+        "file": "en/settings_syncstatus.wav",
+        "hash": "4bdbcdf83838c39b",
+        "duration": 1.2,
+        "category": "settings"
+      },
+      "settings.title": {
+        "file": "en/settings_title.wav",
+        "hash": "74a883a037bc227f",
+        "duration": 0.96,
+        "category": "settings"
+      },
+      "settings.unpair": {
+        "file": "en/settings_unpair.wav",
+        "hash": "2c0bb958c741ab75",
+        "duration": 1.68,
+        "category": "settings"
+      },
+      "settings.unpairConfirm": {
+        "file": "en/settings_unpairconfirm.wav",
+        "hash": "b33f36bad2c51c8b",
+        "duration": 5.12,
+        "category": "settings"
+      },
+      "settings.voiceSpeed": {
+        "file": "en/settings_voicespeed.wav",
+        "hash": "d04bdc8b2986b374",
+        "duration": 1.52,
+        "category": "settings"
+      },
+      "settings.voiceSpeedNormal": {
+        "file": "en/settings_voicespeednormal.wav",
+        "hash": "a7248eeb45eb1ce2",
+        "duration": 1.36,
+        "category": "settings"
+      },
+      "settings.voiceSpeedSlow": {
+        "file": "en/settings_voicespeedslow.wav",
+        "hash": "4b2bebbf33aeb7ae",
+        "duration": 0.72,
+        "category": "settings"
+      },
+      "splash.databasePreparing": {
+        "file": "en/splash_databasepreparing.wav",
+        "hash": "6c87295eb349c2c6",
+        "duration": 1.44,
+        "category": "onboarding"
+      },
+      "splash.databaseReady": {
+        "file": "en/splash_databaseready.wav",
+        "hash": "ed3bd8afcc49426e",
+        "duration": 2.48,
+        "category": "onboarding"
+      },
+      "splash.initialising": {
+        "file": "en/splash_initialising.wav",
+        "hash": "220142ae11333df6",
+        "duration": 1.36,
+        "category": "onboarding"
+      },
+      "sync.allSaved": {
+        "file": "en/sync_allsaved.wav",
+        "hash": "d369b1cb72647b80",
+        "duration": 1.68,
+        "category": "settings"
+      },
+      "sync.failed": {
+        "file": "en/sync_failed.wav",
+        "hash": "c695fc3e88150184",
+        "duration": 3.28,
+        "category": "settings"
+      },
+      "sync.never": {
+        "file": "en/sync_never.wav",
+        "hash": "35c5fe43950d9ac1",
+        "duration": 1.44,
+        "category": "settings"
+      },
+      "sync.retry": {
+        "file": "en/sync_retry.wav",
+        "hash": "8b2f5670d8eec2d3",
+        "duration": 1.36,
+        "category": "settings"
+      },
+      "sync.syncing": {
+        "file": "en/sync_syncing.wav",
+        "hash": "23e39291d6135814",
+        "duration": 1.04,
+        "category": "settings"
+      },
+      "sync.title": {
+        "file": "en/sync_title.wav",
+        "hash": "4bdbcdf83838c39b",
+        "duration": 1.6,
+        "category": "settings"
+      },
+      "whoIsThis.instruction": {
+        "file": "en/whoisthis_instruction.wav",
+        "hash": "b7f28b09afe41628",
+        "duration": 1.12,
+        "category": "games"
+      }
+    }
+  }
+}
