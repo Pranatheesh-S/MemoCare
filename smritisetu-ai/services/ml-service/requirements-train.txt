@@ -1,0 +1,4 @@
+# Optional: only needed to train and export adaptation_model.tflite.
+# The FastAPI service does not import TensorFlow at runtime.
+numpy>=1.26,<2.3
+tensorflow>=2.16,<2.21
