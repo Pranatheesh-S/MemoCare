@@ -1,0 +1,785 @@
+// SmritiSetu AI — PostgreSQL schema.
+// Conventions:
+//  * every primary key is a UUID
+//  * every timestamp is stored in UTC (@db.Timestamptz)
+//  * patient-scoped tables are indexed on (patientId, <time column>)
+//  * append-only event tables carry a (deviceId, eventId) unique constraint so
+//    a replayed offline batch can never create a duplicate
+//  * rows that carry audit meaning are soft-deleted (deletedAt) rather than
+//    physically removed
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --------------------------------------------------------------------------
+//  Enums
+// --------------------------------------------------------------------------
+
+enum UserRole {
+  PATIENT
+  CAREGIVER
+  HEALTH_WORKER
+  ADMIN
+}
+
+enum GameType {
+  MEMORY_MATCH
+  ROUTINE_BUILDER
+  WHO_IS_THIS
+  MEMORY_LANE
+  MARKET_MEMORY
+}
+
+enum ScheduleKind {
+  MEDICINE
+  HYDRATION
+  MEAL
+  EXERCISE
+  APPOINTMENT
+  SLEEP
+  FAMILY_CHECK_IN
+}
+
+enum ReminderState {
+  UPCOMING
+  DUE
+  ACKNOWLEDGED
+  SNOOZED
+  MISSED
+  HELP_REQUESTED
+}
+
+enum AlertType {
+  MISSED_CRITICAL_REMINDER
+  HELP_REQUESTED
+  NO_ACTIVITY
+  SUSTAINED_TREND_CHANGE
+  DEVICE_NOT_SYNCED
+  REPEATED_GAME_ABANDONMENT
+}
+
+enum AlertSeverity {
+  INFORMATION
+  ATTENTION
+  IMPORTANT
+  URGENT
+}
+
+enum AlertStatus {
+  OPEN
+  ACKNOWLEDGED
+  ESCALATED
+  RESOLVED
+}
+
+enum MemoryCategory {
+  MY_FAMILY
+  MY_HOME
+  MY_FESTIVALS
+  MY_PLACES
+  MY_SONGS
+  HAPPY_MOMENTS
+}
+
+enum MemoryAssetType {
+  PHOTO
+  AUDIO
+  STORY
+}
+
+enum ConsentStatus {
+  ACTIVE
+  WITHDRAWN
+}
+
+enum SyncEventType {
+  GAME_SESSION
+  REMINDER_EVENT
+  HELP_REQUEST
+  MEMORY_ENGAGEMENT
+  APP_HEARTBEAT
+}
+
+enum SyncEventStatus {
+  ACCEPTED
+  DUPLICATE
+  REJECTED
+  CONFLICT
+}
+
+enum ObservationStatus {
+  STABLE
+  REVIEW_SUGGESTED
+  INSUFFICIENT_DATA
+}
+
+enum Language {
+  en
+  as
+  mni
+  kha
+  grt
+  lus
+  nag
+  ne
+  bn
+  trp
+  njz
+}
+
+// The eight North Eastern states, each selecting a configurable, community-aware
+// content pack in the patient app. The region is not one culture.
+enum NEState {
+  AS
+  AR
+  MN
+  ML
+  MZ
+  NL
+  SK
+  TR
+}
+
+// --------------------------------------------------------------------------
+//  Identity and access
+// --------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  phoneNumber  String?
+  role         UserRole
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+  deletedAt    DateTime? @db.Timestamptz(3)
+
+  caregiverAssignments    CaregiverAssignment[]
+  healthWorkerAssignments HealthWorkerAssignment[]
+  refreshTokens           RefreshToken[]
+  auditLogs               AuditLog[]
+  consentsGranted         ConsentRecord[]
+  visitNotes              VisitNote[]
+  assignedAlerts          Alert[]            @relation("AlertAssignee")
+  acknowledgedAlerts      Alert[]            @relation("AlertAcknowledger")
+  createdPairingCodes     PairingCode[]
+
+  @@index([role])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique
+  issuedAt  DateTime  @default(now()) @db.Timestamptz(3)
+  expiresAt DateTime  @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+  userAgent String?
+  ipAddress String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("refresh_tokens")
+}
+
+// --------------------------------------------------------------------------
+//  Patient and care team
+// --------------------------------------------------------------------------
+
+model PatientProfile {
+  id                   String   @id @default(uuid()) @db.Uuid
+  displayName          String
+  preferredName        String
+  age                  Int
+  location             String
+  preferredLanguage    Language @default(en)
+  // Which regional content pack the patient app loads. Null keeps pre-existing
+  // profiles valid; the app then falls back to the Assam pack.
+  stateId              NEState?
+  communityId          String?
+  photoStorageKey      String?
+  reducedMotion        Boolean  @default(false)
+  largeText            Boolean  @default(true)
+  audioGuidanceEnabled Boolean  @default(true)
+  packageVersion       Int      @default(1)
+  createdAt            DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(3)
+  deletedAt            DateTime? @db.Timestamptz(3)
+
+  caregiverAssignments    CaregiverAssignment[]
+  healthWorkerAssignments HealthWorkerAssignment[]
+  devices                 Device[]
+  pairingCodes            PairingCode[]
+  consents                ConsentRecord[]
+  medicines               Medicine[]
+  routines                Routine[]
+  schedules               Schedule[]
+  reminderEvents          ReminderEvent[]
+  gameSessions            GameSession[]
+  difficultyProfiles      DifficultyProfile[]
+  sessionPlans            SessionPlan[]
+  memoryAssets            MemoryAsset[]
+  familyContacts          FamilyContact[]
+  alerts                  Alert[]
+  observations            Observation[]
+  visitNotes              VisitNote[]
+  syncEvents              SyncEvent[]
+
+  @@map("patient_profiles")
+}
+
+model CaregiverAssignment {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
+  patientId   String    @db.Uuid
+  relationship String?
+  isPrimary   Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  revokedAt   DateTime? @db.Timestamptz(3)
+
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, patientId])
+  @@index([patientId])
+  @@map("caregiver_assignments")
+}
+
+model HealthWorkerAssignment {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  patientId  String    @db.Uuid
+  facility   String?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  revokedAt  DateTime? @db.Timestamptz(3)
+
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, patientId])
+  @@index([patientId])
+  @@map("health_worker_assignments")
+}
+
+// --------------------------------------------------------------------------
+//  Devices and pairing
+// --------------------------------------------------------------------------
+
+model Device {
+  id               String    @id @default(uuid()) @db.Uuid
+  patientId        String    @db.Uuid
+  deviceIdentifier String    @unique
+  platform         String?
+  appVersion       String?
+  tokenHash        String
+  tokenIssuedAt    DateTime  @default(now()) @db.Timestamptz(3)
+  tokenExpiresAt   DateTime  @db.Timestamptz(3)
+  revokedAt        DateTime? @db.Timestamptz(3)
+  pushToken        String?
+  lastSeenAt       DateTime? @db.Timestamptz(3)
+  lastSyncAt       DateTime? @db.Timestamptz(3)
+  packageVersion   Int       @default(0)
+  createdAt        DateTime  @default(now()) @db.Timestamptz(3)
+
+  patient        PatientProfile  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  syncEvents     SyncEvent[]
+  gameSessions   GameSession[]
+  reminderEvents ReminderEvent[]
+
+  @@index([patientId, lastSyncAt])
+  @@map("devices")
+}
+
+model PairingCode {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String
+  patientId   String    @db.Uuid
+  createdById String    @db.Uuid
+  expiresAt   DateTime  @db.Timestamptz(3)
+  usedAt      DateTime? @db.Timestamptz(3)
+  usedByDeviceId String? @db.Uuid
+  /// Demo affordance only. A normal pairing code is single-use, so it cannot be
+  /// replayed on a second device. The seeded demonstration code is marked
+  /// reusable so the demo journey can be run repeatedly. Never set this on a
+  /// code issued to a real patient.
+  reusable    Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  createdBy User           @relation(fields: [createdById], references: [id])
+
+  @@unique([code, patientId])
+  @@index([code, expiresAt])
+  @@map("pairing_codes")
+}
+
+// --------------------------------------------------------------------------
+//  Consent and memory vault
+// --------------------------------------------------------------------------
+
+model ConsentRecord {
+  id              String        @id @default(uuid()) @db.Uuid
+  patientId       String        @db.Uuid
+  purpose         String
+  grantedByUserId String        @db.Uuid
+  grantedByName   String
+  grantedAt       DateTime      @default(now()) @db.Timestamptz(3)
+  assetScope      String
+  consentVersion  String        @default("1.0")
+  status          ConsentStatus @default(ACTIVE)
+  withdrawnAt     DateTime?     @db.Timestamptz(3)
+  withdrawalNote  String?
+
+  patient       PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  grantedByUser User           @relation(fields: [grantedByUserId], references: [id])
+  memoryAssets  MemoryAsset[]
+
+  @@index([patientId, status])
+  @@map("consent_records")
+}
+
+model MemoryAsset {
+  id              String          @id @default(uuid()) @db.Uuid
+  patientId       String          @db.Uuid
+  consentId       String          @db.Uuid
+  category        MemoryCategory
+  assetType       MemoryAssetType
+  titleEn         String
+  titleAs         String?
+  captionEn       String?
+  captionAs       String?
+  storyEn         String?
+  storyAs         String?
+  storageKey      String?
+  checksum        String?
+  mimeType        String?
+  sizeBytes       Int?
+  personName      String?
+  relationshipEn  String?
+  relationshipAs  String?
+  voiceStorageKey String?
+  favourite       Boolean         @default(false)
+  createdAt       DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime        @updatedAt @db.Timestamptz(3)
+  deletedAt       DateTime?       @db.Timestamptz(3)
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  consent ConsentRecord  @relation(fields: [consentId], references: [id])
+
+  @@index([patientId, category])
+  @@index([patientId, createdAt])
+  @@map("memory_assets")
+}
+
+model FamilyContact {
+  id              String   @id @default(uuid()) @db.Uuid
+  patientId       String   @db.Uuid
+  name            String
+  relationshipEn  String
+  relationshipAs  String?
+  phoneNumber     String
+  photoStorageKey String?
+  isPrimary       Boolean  @default(false)
+  displayOrder    Int      @default(0)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  deletedAt       DateTime? @db.Timestamptz(3)
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, displayOrder])
+  @@map("family_contacts")
+}
+
+// --------------------------------------------------------------------------
+//  Care plan: medicines, routines, schedules
+// --------------------------------------------------------------------------
+
+model Medicine {
+  id           String    @id @default(uuid()) @db.Uuid
+  patientId    String    @db.Uuid
+  name         String
+  // Dosage text is recorded for the caregiver's reference only. The patient
+  // application never instructs the patient about dosage.
+  dosageNote   String?
+  prescribedBy String?
+  critical     Boolean   @default(true)
+  createdAt    DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt    DateTime? @db.Timestamptz(3)
+
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  schedules Schedule[]
+
+  @@index([patientId])
+  @@map("medicines")
+}
+
+model Routine {
+  id          String    @id @default(uuid()) @db.Uuid
+  patientId   String    @db.Uuid
+  titleEn     String
+  titleAs     String?
+  description String?
+  /// Ordered step labels used by the Routine Builder activity.
+  steps       Json      @default("[]")
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
+  deletedAt   DateTime? @db.Timestamptz(3)
+
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  schedules Schedule[]
+
+  @@index([patientId])
+  @@map("routines")
+}
+
+model Schedule {
+  id                 String       @id @default(uuid()) @db.Uuid
+  patientId          String       @db.Uuid
+  medicineId         String?      @db.Uuid
+  routineId          String?      @db.Uuid
+  kind               ScheduleKind
+  titleEn            String
+  titleAs            String?
+  detail             String?
+  critical           Boolean      @default(false)
+  /// [{ timeOfDay: "08:00", daysOfWeek: [0,1,2,3,4,5,6] }]
+  occurrences        Json
+  missedAfterMinutes Int          @default(45)
+  snoozeMinutes      Int          @default(10)
+  version            Int          @default(1)
+  active             Boolean      @default(true)
+  createdAt          DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime     @updatedAt @db.Timestamptz(3)
+  deletedAt          DateTime?    @db.Timestamptz(3)
+
+  patient        PatientProfile    @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  medicine       Medicine?         @relation(fields: [medicineId], references: [id])
+  routine        Routine?          @relation(fields: [routineId], references: [id])
+  versions       ScheduleVersion[]
+  reminderEvents ReminderEvent[]
+
+  @@index([patientId, active])
+  @@index([patientId, updatedAt])
+  @@map("schedules")
+}
+
+/// Immutable snapshot of a schedule at each version. Medicine and routine
+/// schedules are never silently overwritten — every edit appends a version.
+model ScheduleVersion {
+  id                 String       @id @default(uuid()) @db.Uuid
+  scheduleId         String       @db.Uuid
+  version            Int
+  kind               ScheduleKind
+  titleEn            String
+  titleAs            String?
+  detail             String?
+  critical           Boolean
+  occurrences        Json
+  missedAfterMinutes Int
+  snoozeMinutes      Int
+  active             Boolean
+  changedByUserId    String?      @db.Uuid
+  changeNote         String?
+  createdAt          DateTime     @default(now()) @db.Timestamptz(3)
+
+  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@unique([scheduleId, version])
+  @@index([scheduleId, createdAt])
+  @@map("schedule_versions")
+}
+
+// --------------------------------------------------------------------------
+//  Append-only patient events
+// --------------------------------------------------------------------------
+
+model ReminderEvent {
+  id              String        @id @default(uuid()) @db.Uuid
+  /// Client-generated UUID; unique per device so replays are idempotent.
+  eventId         String        @db.Uuid
+  patientId       String        @db.Uuid
+  deviceId        String        @db.Uuid
+  scheduleId      String        @db.Uuid
+  scheduleVersion Int           @default(1)
+  kind            ScheduleKind
+  critical        Boolean       @default(false)
+  dueAt           DateTime      @db.Timestamptz(3)
+  state           ReminderState
+  stateChangedAt  DateTime      @db.Timestamptz(3)
+  snoozeCount     Int           @default(0)
+  helpRequested   Boolean       @default(false)
+  receivedAt      DateTime      @default(now()) @db.Timestamptz(3)
+
+  patient  PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  device   Device         @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  schedule Schedule       @relation(fields: [scheduleId], references: [id])
+
+  @@unique([deviceId, eventId])
+  @@index([patientId, dueAt])
+  @@index([patientId, state, dueAt])
+  @@index([scheduleId, dueAt])
+  @@map("reminder_events")
+}
+
+model GameSession {
+  id                        String   @id @default(uuid()) @db.Uuid
+  eventId                   String   @db.Uuid
+  patientId                 String   @db.Uuid
+  deviceId                  String   @db.Uuid
+  gameType                  GameType
+  difficulty                Int
+  accuracy                  Float?
+  responseTimeSeconds       Float
+  hintsUsed                 Int      @default(0)
+  attempts                  Int      @default(0)
+  completed                 Boolean  @default(false)
+  abandoned                 Boolean  @default(false)
+  engagementDurationSeconds Int      @default(0)
+  playedAt                  DateTime @db.Timestamptz(3)
+  detail                    Json?
+  receivedAt                DateTime @default(now()) @db.Timestamptz(3)
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  device  Device         @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@unique([deviceId, eventId])
+  @@index([patientId, playedAt])
+  @@index([patientId, gameType, playedAt])
+  @@map("game_sessions")
+}
+
+model SyncEvent {
+  id             String          @id @default(uuid()) @db.Uuid
+  eventId        String          @db.Uuid
+  patientId      String          @db.Uuid
+  deviceId       String          @db.Uuid
+  eventType      SyncEventType
+  eventTimestamp DateTime        @db.Timestamptz(3)
+  payloadVersion Int             @default(1)
+  localCreatedAt DateTime        @db.Timestamptz(3)
+  payload        Json
+  status         SyncEventStatus @default(ACCEPTED)
+  rejectionCode  String?
+  receivedAt     DateTime        @default(now()) @db.Timestamptz(3)
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  device  Device         @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@unique([deviceId, eventId])
+  @@index([patientId, eventTimestamp])
+  @@index([deviceId, receivedAt])
+  @@map("sync_events")
+}
+
+// --------------------------------------------------------------------------
+//  Personalisation, alerts, clinical notes
+// --------------------------------------------------------------------------
+
+model DifficultyProfile {
+  id                   String   @id @default(uuid()) @db.Uuid
+  patientId            String   @db.Uuid
+  gameType             GameType
+  currentDifficulty    Int      @default(1)
+  hintLevel            Int      @default(1)
+  reasonCode           String   @default("INITIAL")
+  explanation          String   @default("Starting at the gentlest level.")
+  modelVersion         String   @default("rules-1.0.0")
+  evidenceSessionCount Int      @default(0)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(3)
+  createdAt            DateTime @default(now()) @db.Timestamptz(3)
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  history AdaptationDecision[]
+
+  @@unique([patientId, gameType])
+  @@index([patientId])
+  @@map("difficulty_profiles")
+}
+
+/// The latest AI personalisation plan for one activity: which game to offer,
+/// how many items and questions, preview time, hint level and modality, whether
+/// to shorten the session or end with a calm activity, and which content to
+/// prefer. The deterministic rules set the difficulty ceiling and hint floor;
+/// an optional Gemini pass may only soften the plan. Never a clinical claim.
+model SessionPlan {
+  id                  String   @id @default(uuid()) @db.Uuid
+  patientId           String   @db.Uuid
+  gameType            GameType
+  recommendedGameType GameType
+  difficulty          Int      @default(1)
+  itemCount           Int      @default(0)
+  questionCount       Int      @default(1)
+  previewSeconds      Int      @default(0)
+  hintLevel           Int      @default(1)
+  hintModality        String   @default("VISUAL")
+  sessionLength       String   @default("STANDARD")
+  endWithCalmActivity Boolean  @default(false)
+  contentPreference   String   @default("STANDARD")
+  bestTimeOfDay       String   @default("UNKNOWN")
+  comfortFirst        Boolean  @default(false)
+  reasonCode          String   @default("INITIAL")
+  explanation         String   @default("Starting from the current level.")
+  confidence          Float    @default(0)
+  source              String   @default("baseline")
+  signals             Json?
+  modelVersion        String   @default("personalisation-rules-1.0.0")
+  createdAt           DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime @updatedAt @db.Timestamptz(3)
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([patientId, gameType])
+  @@index([patientId])
+  @@map("session_plans")
+}
+
+/// Stored evidence for every adaptation decision: input, rule version,
+/// decision, explanation and timestamp.
+model AdaptationDecision {
+  id                   String   @id @default(uuid()) @db.Uuid
+  difficultyProfileId  String   @db.Uuid
+  patientId            String   @db.Uuid
+  gameType             GameType
+  previousDifficulty   Int
+  recommendedDifficulty Int
+  hintLevel            Int
+  reasonCode           String
+  explanation          String
+  confidence           Float    @default(0)
+  evidenceSessionCount Int      @default(0)
+  evidence             Json
+  modelVersion         String
+  createdAt            DateTime @default(now()) @db.Timestamptz(3)
+
+  difficultyProfile DifficultyProfile @relation(fields: [difficultyProfileId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, createdAt])
+  @@map("adaptation_decisions")
+}
+
+model Alert {
+  id                   String        @id @default(uuid()) @db.Uuid
+  patientId            String        @db.Uuid
+  type                 AlertType
+  severity             AlertSeverity
+  evidence             Json
+  explanation          String
+  status               AlertStatus   @default(OPEN)
+  assignedUserId       String?       @db.Uuid
+  acknowledgedAt       DateTime?     @db.Timestamptz(3)
+  acknowledgedByUserId String?       @db.Uuid
+  escalatedAt          DateTime?     @db.Timestamptz(3)
+  resolvedAt           DateTime?     @db.Timestamptz(3)
+  resolutionNote       String?
+  ruleVersion          String        @default("alerts-1.0.0")
+  /// Stable identity of the underlying condition; blocks duplicate open alerts.
+  dedupeKey            String
+  createdAt            DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime      @updatedAt @db.Timestamptz(3)
+
+  patient         PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  assignedUser    User?          @relation("AlertAssignee", fields: [assignedUserId], references: [id])
+  acknowledgedBy  User?          @relation("AlertAcknowledger", fields: [acknowledgedByUserId], references: [id])
+
+  @@index([patientId, status, createdAt])
+  @@index([patientId, severity])
+  @@map("alerts")
+}
+
+/// Guarantees only one OPEN/ACKNOWLEDGED/ESCALATED alert exists per condition.
+model AlertDedupe {
+  id        String   @id @default(uuid()) @db.Uuid
+  patientId String   @db.Uuid
+  dedupeKey String
+  alertId   String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([patientId, dedupeKey])
+  @@map("alert_dedupe")
+}
+
+model Observation {
+  id           String            @id @default(uuid()) @db.Uuid
+  patientId    String            @db.Uuid
+  period       String
+  status       ObservationStatus
+  reasonCode   String
+  explanation  String
+  /// Always false. SmritiSetu AI is a support tool, never a diagnostic one.
+  isDiagnosis  Boolean           @default(false)
+  indicators   Json
+  modelVersion String
+  createdAt    DateTime          @default(now()) @db.Timestamptz(3)
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, createdAt])
+  @@map("observations")
+}
+
+model VisitNote {
+  id         String    @id @default(uuid()) @db.Uuid
+  patientId  String    @db.Uuid
+  authorId   String    @db.Uuid
+  visitedAt  DateTime  @db.Timestamptz(3)
+  summary    String
+  followUpAt DateTime? @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  deletedAt  DateTime? @db.Timestamptz(3)
+
+  patient PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  author  User           @relation(fields: [authorId], references: [id])
+
+  @@index([patientId, visitedAt])
+  @@map("visit_notes")
+}
+
+// --------------------------------------------------------------------------
+//  Language packs and audit
+// --------------------------------------------------------------------------
+
+model LanguagePack {
+  id           String   @id @default(uuid()) @db.Uuid
+  language     Language
+  version      Int
+  translations Json
+  audioPrompts Json     @default("[]")
+  checksum     String?
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+
+  @@unique([language, version])
+  @@map("language_packs")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @db.Uuid
+  actorRole  String?
+  actorType  String   @default("USER")
+  action     String
+  resource   String
+  resourceId String?
+  patientId  String?  @db.Uuid
+  ipAddress  String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([patientId, createdAt])
+  @@index([actorId, createdAt])
+  @@index([resource, createdAt])
+  @@map("audit_logs")
+}

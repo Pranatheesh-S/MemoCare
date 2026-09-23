@@ -1,0 +1,7 @@
+{
+  "_meta.status": "PLACEHOLDER_PENDING_NATIVE_REVIEW",
+  "_meta.language": "Nepali",
+  "_meta.note": "Nepali strings have not been prepared yet. Every key falls back to en.json at runtime, so the app is fully usable in the meantime. Add reviewed translations here (keys mirror en.json) — review is a single-file task.",
+  "_meta.reviewedBy": "",
+  "_meta.reviewedAt": ""
+}
