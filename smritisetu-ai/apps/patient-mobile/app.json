@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "Remi",
+    "slug": "remi-patient",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "smritisetu",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ai.smritisetu.patient",
+      "appleTeamId": "7GL2529JG5",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Not used by the patient app. Family voice clips are recorded by caregivers in the caregiver app."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#DAF1DE"
+      },
+      "package": "ai.smritisetu.patient",
+      "permissions": [
+        "POST_NOTIFICATIONS",
+        "SCHEDULE_EXACT_ALARM",
+        "CALL_PHONE",
+        "VIBRATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-secure-store",
+      "expo-audio",
+      [
+        "expo-notifications",
+        {
+          "color": "#0B2B26",
+          "defaultChannel": "reminders"
+        }
+      ],
+      "./plugins/withPersonalTeam.js",
+      "react-native-fast-tflite",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#DAF1DE"
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:4000",
+      "demoMode": true,
+      "demoPairingCode": "123456"
+    }
+  }
+}
