@@ -8,7 +8,7 @@ async function main(): Promise<void> {
   await prisma.$queryRaw`SELECT 1`;
 
   const app = createApp();
-  const server = app.listen(env.PORT, () => {
+  const server = app.listen(env.PORT, "0.0.0.0", () => {
     logger.info("SmritiSetu AI backend started", {
       port: env.PORT,
       env: env.NODE_ENV,
